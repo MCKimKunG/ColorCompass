@@ -1,0 +1,123 @@
+plugins {
+	id 'fabric-loom' version '1.7-SNAPSHOT'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+sourceSets.main.resources {
+	srcDir "src/generated/resources"
+}
+
+base {
+	archivesName = project.archives_base_name
+}
+
+loom {
+
+	var commonVmArgs = [
+		"-XX:+AllowEnhancedClassRedefinition",
+		"-XX:+IgnoreUnrecognizedVMOptions"
+	]
+
+	var hotswapVmArgs = [
+		"-Dfabric.systemLibraries=${System.getProperty("java.home")}/lib/hotswap/hotswap-agent.jar".toString(),
+		"-XX:HotswapAgent=fatjar"
+	]
+
+	var commonProperties = [
+		"mixin.debug.export": "true",
+		"mixin.hotSwap": "true"
+	]
+
+	decompilers {
+        vineflower {
+            options.put("pll", "32767")
+            options.put("ind", "    ")
+        }
+    }
+
+    runs.configureEach {
+		properties commonProperties
+		vmArgs commonVmArgs
+		vmArgs hotswapVmArgs
+    }
+
+    runs {
+        client {
+			property "devauth.enabled", "true"
+        }
+		datagen {
+			server()
+			name "Fabric Data Generation"
+			property "fabric-api.datagen"
+			property "fabric-api.datagen.output-dir", "${file("src/generated/resources")}"
+			runDir "build/datagen"
+		}
+    }
+
+	mixin {
+		defaultRefmapName = "color-compass.mixins.refmap.json"
+	}
+
+}
+
+repositories {
+	maven {
+        name "DevAuth"
+        url "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
+        content {
+            includeGroup "me.djtheredstoner"
+        }
+    }
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1") {
+		exclude group: "net.fabricmc", module: "fabric-loader"
+	}
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 17
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+String fileName = "${archives_base_name}-mc${minecraft_version}"
+List<String> devExcludes = [".cache", "**/datagen/"]
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${project.base.archivesName.get()}"}
+	}
+	excludes = devExcludes
+}
+
+remapJar {
+	archiveVersion = "v${project.version}"
+	archiveBaseName = fileName
+}
+
+afterEvaluate {
+    loom.runs.configureEach {
+        vmArg "-javaagent:${configurations.compileClasspath.find { it.name.contains("sponge-mixin") }}"
+    }
+}

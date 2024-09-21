@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "color-compass",
+	"version": "${version}",
+	"name": "Color Compass",
+	"description": "This made by KimKunG",
+	"authors": [
+		"KimKunG",
+		"MCKimKunG"
+	],
+	"contact": {
+		"homepage": "https://mckimkung.in.th",
+		"sources": "https://github.com/MCKimKunG"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/colorcompass/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.kimkung.colorcompass.ColorCompassCommon"
+		],
+		"client": [
+			"net.kimkung.colorcompass.ColorCompassClient"
+		],
+		"fabric-datagen": [
+			"net.kimkung.colorcompass.ColorCompassDataGenerator"
+		]
+	},
+	"mixins": [
+		"color-compass.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
