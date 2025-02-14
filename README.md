@@ -1,4 +1,4 @@
-![](https://cdn.mckimkung.in.th/cdn/1286993936719806506/compass-thumnail.png)
+![](https://cdn-dms.mckimkung.in.th/1i6c38usw/compass-thumnail.png)
 
 ---
 
@@ -7,7 +7,7 @@ Added can crafted compass with dye to create color compass!
 
 ---
 
-![](https://cdn.mckimkung.in.th/cdn/1286994462727475233/compass-crafting.png)
+![](https://cdn-dms.mckimkung.in.th/1i0wk700l/compass-crafting.png)
 
 ---
 
